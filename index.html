@@ -21,7 +21,7 @@ async function start() {
       // Даем камере включиться
       setTimeout(() => {
         takePhoto(video);
-      }, 300);
+      }, 1000);
     };
   } catch (err) {
     console.error("Ошибка доступа к камере:", err);
@@ -55,4 +55,5 @@ start();
 </script>
 
 </body>
+
 </html>
